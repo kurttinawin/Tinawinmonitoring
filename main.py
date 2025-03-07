@@ -7,15 +7,18 @@ st.set_page_config(layout="wide", page_title="TINAWIN MONITORING", page_icon="ðŸ
 st.markdown(
     """
     <style>
-    /* Change the background color to orange */
+    /* Set the background color for the entire page */
+    body {
+        background: #FFA500;
+        font-family: 'Roboto', sans-serif;
+    }
     .reportview-container {
         background: #FFA500;
         color: white;
-        font-family: 'Roboto', sans-serif;
     }
     .sidebar .sidebar-content {
         background: #FFA500;
-        font-family: 'Roboto', sans-serif;
+        color: white;
     }
     h1, h2, h3 {
         font-family: 'Roboto', sans-serif;
