@@ -24,7 +24,7 @@ st.title('Daily Remark Summary')
 @st.cache_data
 def load_data(uploaded_file):
     df = pd.read_excel(uploaded_file)
-    df = df[~df['Remark By'].isin(['KFTINAWIN', 'KPILUSTRISIMO'])]
+    df = df[~df['Remark By'].isin(['KFTINAWIN', 'KPILUSTRISIMO','SPMADRID'])]
     return df
 
 uploaded_file = st.sidebar.file_uploader("Upload Daily Remark File", type="xlsx")
