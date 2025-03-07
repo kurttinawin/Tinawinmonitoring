@@ -141,9 +141,9 @@ if uploaded_file is not None:
             summary_table = calculate_summary(manual_cycle_group, 'Outgoing')
             st.write(summary_table)
 
-    col5, col6 = st.columns(2)
+    col5, col6 = st.columns(2)  # Fixed indentation here
 
-        with col5:
+    with col5:
         st.write("## Summary Table by Collector per Day")
 
         # Add date filter for Collector Table
