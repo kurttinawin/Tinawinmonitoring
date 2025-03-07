@@ -3,83 +3,26 @@ import pandas as pd
 
 st.set_page_config(layout="wide", page_title="TINAWIN MONITORING", page_icon="📊", initial_sidebar_state="expanded")
 
-# Apply custom CSS for a good design
+# Apply custom styles for the background and font
 st.markdown(
     """
     <style>
-    /* General Background & Text */
+    /* Change the background color to orange */
     .reportview-container {
-        background-color: #1E1E1E; /* Dark background */
-        color: #E0E0E0; /* Light text */
+        background: #FFA500;
+        color: white;
+        font-family: 'Roboto', sans-serif;
     }
-
     .sidebar .sidebar-content {
-        background-color: #1E1E1E;
+        background: #FFA500;
+        font-family: 'Roboto', sans-serif;
     }
-
-    h1, h2 {
-        color: #F39C12; /* Yellow headers for emphasis */
+    h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
     }
-
-    .stButton>button {
-        background-color: #16A085; /* Green color for buttons */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .stButton>button:hover {
-        background-color: #1ABC9C; /* Hover effect for buttons */
-    }
-
-    /* Table Styling */
-    .dataframe {
-        background-color: #2C3E50; /* Dark background for tables */
-        color: white;
-    }
-
-    .dataframe th {
-        background-color: #34495E; /* Lighter shade for table header */
-        color: #F39C12; /* Yellow header text */
-    }
-
-    .dataframe tr:nth-child(even) {
-        background-color: #3E4C59; /* Slightly lighter rows */
-    }
-
-    .dataframe tr:nth-child(odd) {
-        background-color: #2C3E50; /* Slightly darker rows */
-    }
-
-    .dataframe td, .dataframe th {
-        padding: 10px;
-        text-align: center;
-    }
-
-    .stTextInput>div>div>input {
-        background-color: #34495E;
-        color: white;
-    }
-
-    .stDateInput>div>div>input {
-        background-color: #34495E;
-        color: white;
-    }
-
-    /* Sidebar Styling */
-    .sidebar .sidebar-content {
-        background-color: #2C3E50; /* Sidebar with dark color */
-        color: #E0E0E0; /* Light text in sidebar */
-    }
-
-    .stFileUploader {
-        background-color: #2C3E50;
-        color: #E0E0E0;
-    }
-
+    /* Adding Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     </style>
     """,
     unsafe_allow_html=True
@@ -220,18 +163,16 @@ if uploaded_file is not None:
         except ValueError:
             start_date, end_date = None, None
 
-        # Filter data based on the selected date range or show all if no date range is selected
         if start_date and end_date:
             filtered_df = df[(df['Date'].dt.date >= start_date) & (df['Date'].dt.date <= end_date)]
         else:
-            filtered_df = df
+            filtered_df = df  # If no date range is selected, show all data
 
         # Initialize an empty DataFrame for the summary table by collector
         collector_summary = pd.DataFrame(columns=[
             'Day', 'Collector', 'Total Connected', 'Total PTP', 'Total RPC', 'PTP Amount', 'Balance Amount'
         ])
 
-        # Group by 'Date' and 'Remark By' (Collector)
         for (date, collector), collector_group in filtered_df[~filtered_df['Remark By'].str.upper().isin(['SYSTEM'])].groupby([filtered_df['Date'].dt.date, 'Remark By']):
             total_connected = collector_group[collector_group['Call Status'] == 'CONNECTED']['Account No.'].count()
             total_ptp = collector_group[collector_group['Status'].str.contains('PTP', na=False) & (collector_group['PTP Amount'] != 0)]['Account No.'].nunique()
