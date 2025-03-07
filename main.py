@@ -3,17 +3,83 @@ import pandas as pd
 
 st.set_page_config(layout="wide", page_title="TINAWIN MONITORING", page_icon="📊", initial_sidebar_state="expanded")
 
-# Apply dark mode
+# Apply custom CSS for a good design
 st.markdown(
     """
     <style>
+    /* General Background & Text */
     .reportview-container {
-        background: #2E2E2E;
+        background-color: #1E1E1E; /* Dark background */
+        color: #E0E0E0; /* Light text */
+    }
+
+    .sidebar .sidebar-content {
+        background-color: #1E1E1E;
+    }
+
+    h1, h2 {
+        color: #F39C12; /* Yellow headers for emphasis */
+    }
+
+    .stButton>button {
+        background-color: #16A085; /* Green color for buttons */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .stButton>button:hover {
+        background-color: #1ABC9C; /* Hover effect for buttons */
+    }
+
+    /* Table Styling */
+    .dataframe {
+        background-color: #2C3E50; /* Dark background for tables */
         color: white;
     }
-    .sidebar .sidebar-content {
-        background: #2E2E2E;
+
+    .dataframe th {
+        background-color: #34495E; /* Lighter shade for table header */
+        color: #F39C12; /* Yellow header text */
     }
+
+    .dataframe tr:nth-child(even) {
+        background-color: #3E4C59; /* Slightly lighter rows */
+    }
+
+    .dataframe tr:nth-child(odd) {
+        background-color: #2C3E50; /* Slightly darker rows */
+    }
+
+    .dataframe td, .dataframe th {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .stTextInput>div>div>input {
+        background-color: #34495E;
+        color: white;
+    }
+
+    .stDateInput>div>div>input {
+        background-color: #34495E;
+        color: white;
+    }
+
+    /* Sidebar Styling */
+    .sidebar .sidebar-content {
+        background-color: #2C3E50; /* Sidebar with dark color */
+        color: #E0E0E0; /* Light text in sidebar */
+    }
+
+    .stFileUploader {
+        background-color: #2C3E50;
+        color: #E0E0E0;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -140,7 +206,7 @@ if uploaded_file is not None:
             summary_table = calculate_summary(manual_cycle_group, 'Outgoing')
             st.write(summary_table)
 
-    col5, col6 = st.columns(2)  # Fixed indentation here
+    col5, col6 = st.columns(2)
 
     with col5:
         st.write("## Summary Table by Collector per Day")
@@ -150,7 +216,6 @@ if uploaded_file is not None:
         max_date = df['Date'].max().date()
 
         try:
-            # Add date range selection for Collector table
             start_date, end_date = st.date_input("Select date range for Collector", [min_date, max_date], min_value=min_date, max_value=max_date)
         except ValueError:
             start_date, end_date = None, None
@@ -159,7 +224,7 @@ if uploaded_file is not None:
         if start_date and end_date:
             filtered_df = df[(df['Date'].dt.date >= start_date) & (df['Date'].dt.date <= end_date)]
         else:
-            filtered_df = df  # If no date range is selected, show all data
+            filtered_df = df
 
         # Initialize an empty DataFrame for the summary table by collector
         collector_summary = pd.DataFrame(columns=[
@@ -168,14 +233,12 @@ if uploaded_file is not None:
 
         # Group by 'Date' and 'Remark By' (Collector)
         for (date, collector), collector_group in filtered_df[~filtered_df['Remark By'].str.upper().isin(['SYSTEM'])].groupby([filtered_df['Date'].dt.date, 'Remark By']):
-            # Calculate the metrics
             total_connected = collector_group[collector_group['Call Status'] == 'CONNECTED']['Account No.'].count()
             total_ptp = collector_group[collector_group['Status'].str.contains('PTP', na=False) & (collector_group['PTP Amount'] != 0)]['Account No.'].nunique()
             total_rpc = collector_group[collector_group['Status'].str.contains('POSITIVE CONTACT', na=False)]['Account No.'].nunique()
             ptp_amount = collector_group[collector_group['Status'].str.contains('PTP', na=False) & (collector_group['PTP Amount'] != 0)]['PTP Amount'].sum()
             balance_amount = collector_group[collector_group['Status'].str.contains('PTP', na=False) & (collector_group['Balance'] != 0)]['Balance'].sum()
 
-            # Add the row to the summary
             collector_summary = pd.concat([collector_summary, pd.DataFrame([{
                 'Day': date,
                 'Collector': collector,
@@ -186,7 +249,6 @@ if uploaded_file is not None:
                 'Balance Amount': balance_amount,
             }])], ignore_index=True)
 
-        # Add totals row at the bottom
         totals_row = {
             'Day': 'Total',
             'Collector': '',
